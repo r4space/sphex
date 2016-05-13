@@ -1,0 +1,18 @@
+On Pi:
+        
+    sudo raspi-config
+        > Select Advanced Options and disable OS control of the serial port
+
+    sudo apt-get install screen python-wxgtk2.8 python-matplotlib python-opencv python-pip python-numpy python-dev libxml2-dev libxslt-dev
+    sudo pip install pymavlink
+    sudo pip install mavproxy
+
+
+    sudo chown -R pi /home/pi       //Ensures logs will belog to pi
+    
+    pip install dronekit        //installs to /usr/local/bin/
+
+
+#Start MAVProxy terminal in the location where your DroneKit script is located 
+    cd /usr/local/bin/
+    mavproxy.py --master=/dev/ttyAMA0 --baudrate 57600 --aircraft MyCopter  
