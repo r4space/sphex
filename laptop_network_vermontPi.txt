@@ -1,0 +1,10 @@
+ iface eth0 inet static
+ address 10.0.0.6
+ netmask 255.255.255.0
+ gateway 10.0.0.1
+ network 10.0.0.0
+ broadcast 0.0.0.0
+
+
+ sudo ip addr add 10.0.0.6/8 dev eth0
+ sudo ip route add default via 10.0.0.1
