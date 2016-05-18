@@ -1,4 +1,5 @@
 #TODO
+from dronekit import connect, VehicleMode
 #from dronekit import connect, VehicleMode
 import os
 import time
@@ -7,6 +8,10 @@ import struct, array, time, io, fcntl, sys
 #CONFIGS:
 dataDir="/home/pi/DATA_STORE/"
 filename="CO2Meter_GPS.csv"
+vehicle = connect('/dev/ttyAMA0', wait_ready=True, baud=57600)
+pilotV = vehicle.wait_ready('autopilot_version')
+
+
 #Make next flight dir
 def mkND(dataDir):
 	a=os.listdir(dataDir)
@@ -16,10 +21,24 @@ def mkND(dataDir):
 	return ND+"/"
 
 
-#Mavlink Setup
-def mavlink_setup():
-#TODO
-	pass
+def get_position(vehicle):
+    lat = vehicle.location.global_frame.lat
+    long = vehicle.location.global_frame.lon
+    alt = vehicle.location.global_frame.alt
+    air_spd = vehicle.airspeed
+
+    mode = str(vehicle.mode)
+    mode=mode.split(":")[1]
+
+    gps_stat = str(vehicle.gps_0)
+    fix= gps_stat.split(":")[1].split(",")[0].split('=')[1]
+    count= gps_stat.split(":")[1].split(",")[1].split('=')[1]
+
+
+
+    return [lat,long,alt,air_spd,mode,fix,count]
+
+
 
 def readCO2meter(fw):
 
@@ -53,7 +72,7 @@ def readCO2meter(fw):
 #Create Log File
 ND=mkND(dataDir)
 f = open(ND+filename,"w")
-f.write("CO2 (PPM), Latitude, Longitude, Time")
+f.write("CO2 (PPM), Latitude, Longitude, Altitude, Air Speed (m/s), Mode, Fixed Sats, Available Sats")
 
 #I2C Setup
 print ("CONFIGUREING I2C")
@@ -65,17 +84,26 @@ fw = io.open("/dev/i2c-"+str(bus), "wb", buffering=0)
 fcntl.ioctl(fr, I2C_SLAVE, ADDR)
 fcntl.ioctl(fw, I2C_SLAVE, ADDR)
 
-#Mavlink setup
-
 #Run
+#TODO Uncomment
+#while not vehicle.armed:
+#    time.sleep(1) 
+
 for i in range(10):
-#while(ARMED):
+#TODO Uncomment
+#while not vehicle.armed:
 	print(i)
-	ppm = readCO2meter(fw)
-	GPS = readPixHawk()
-	f.write(str(ppm)+","+"GPS"\n")
 	time.sleep(0.5)
 
+	ppm = readCO2meter(fw)
+	stats = get_position(vehicle)
+
+	f.write("\n%s,%s,%s,%s,%s,%s,%s,%s" % (ppm,stats[0],stats[1],stats[2],stats[3],stats[4],stats[5],stats[6]))
+
+
+
+
 f.close()
+vehicle.close()
 
 
