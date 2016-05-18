@@ -1,0 +1,13 @@
+
+#Run examples (from within dir containing)
+python vehicle_state.py --connect /dev/ttyAMA0,57600
+
+#Run mav proxy:
+mavproxy.py --master=/dev/ttyAMA0 --baudrate 57600 --aircraft MyCopter
+
+#QGroundControl Specific:
+set parameter SYS_COMPANION to 57600
+(unecessary if Pixhawk flashed with MissionPlanner)
+
+#Pi3:
+it's not /dev/ttyAMA0 (google it - another name)
