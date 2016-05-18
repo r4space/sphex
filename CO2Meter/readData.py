@@ -14,35 +14,24 @@ def mkND(dataDir):
 	os.makedirs(ND)
 	return ND+"/"
 
-#I2C Setup
-def i2c_config():
-    print ("CONFIGUREING I2C")
-    I2C_SLAVE=0x0703
-    ADDR = 0x68
-    bus=1
-    fr = io.open("/dev/i2c-"+str(bus), "rb", buffering=0)
-    fw = io.open("/dev/i2c-"+str(bus), "wb", buffering=0)
-    fcntl.ioctl(fr, I2C_SLAVE, ADDR)
-    fcntl.ioctl(fw, I2C_SLAVE, ADDR)
-    s = [0x22,0x00,0x08,0x2A]
-    return bytearray( s )
 
 #Mavlink Setup
 def mavlink_setup():
 #TODO
-    pass
+	pass
 
-def readCO2meter(CMD):
+def readCO2meter(CMD,fw):
 
-    #REQUEST
+	#REQUEST
 	try:
 		fw.write( CMD ) #sending config register bytes
-	except IOError,e:
+	except IOError as e:
 		e = sys.exc_info()
 
 	time.sleep(0.02)
-	
-    #RECEIVE
+
+	#RECEIVE
+	buf=256
 	try:
 		data = fr.read(4) #read 4 bytes
 		buf = array.array('B', data)
@@ -53,10 +42,10 @@ def readCO2meter(CMD):
 			print "bullshit result"
 			print buf
 
-	except IOError,e:
+	except IOError as e:
 		e = sys.exc_info()
 		print "10Unexpected error2s: ",e
-    return(buf)
+	return buf
 
 #MainLoop
 #Delay for StartUp of CO2Meter
@@ -64,14 +53,24 @@ def readCO2meter(CMD):
 #time.sleep(60)
 ND=mkND(dataDir)
 f = open(ND+filename,"w")
-CMD = i2c_config()
+
+#I2C Setup
+print ("CONFIGUREING I2C")
+I2C_SLAVE=0x0703
+ADDR = 0x68
+bus=1
+fr = io.open("/dev/i2c-"+str(bus), "rb", buffering=0)
+fw = io.open("/dev/i2c-"+str(bus), "wb", buffering=0)
+fcntl.ioctl(fr, I2C_SLAVE, ADDR)
+fcntl.ioctl(fw, I2C_SLAVE, ADDR)
+CMD = [0x22,0x00,0x08,0x2A]
 
 for i in range(10):
 #while(ARMED):
-    print(i)
-    value = readCO2meter(CMD)
-    f.write(str(value)+"/n")
-    time.sleep(0.5)
+	print(i)
+	value = readCO2meter(CMD,fw)
+	f.write(str(value)+"/n")
+	time.sleep(0.5)
 
 f.close()
 
