@@ -15,10 +15,4 @@
 **/.idea/*
 **/.idea/workspace.xml 
 **/.idea/tasks.xml
-**/downloads/*
-**/stage/*
-**/parts/*
-**/snap/*
-**/demoSnap/*
-**snapcraft/*
 
