@@ -1,3 +1,5 @@
+from dronekit import connect, VehicleMode
+import time
 import struct, array, time, io, fcntl, sys
 
 I2C_SLAVE=0x0703
