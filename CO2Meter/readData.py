@@ -1,44 +1,109 @@
+#TODO
+from dronekit import connect, VehicleMode
+#from dronekit import connect, VehicleMode
+import os
+import time
 import struct, array, time, io, fcntl, sys
 
-I2C_SLAVE=0x0703
+#CONFIGS:
+dataDir="/home/pi/DATA_STORE/"
+filename="CO2Meter_GPS.csv"
+vehicle = connect('/dev/ttyAMA0', wait_ready=True, baud=57600)
+pilotV = vehicle.wait_ready('autopilot_version')
 
-ADDR = 0x68
 
-bus=1
-fr = io.open("/dev/i2c-"+str(bus), "rb", buffering=0)
-fw = io.open("/dev/i2c-"+str(bus), "wb", buffering=0)
+#Make next flight dir
+def mkND(dataDir):
+	a=os.listdir(dataDir)
+	num=len(a)
+	ND=dataDir+"Flight"+str(num+1).zfill(3)
+	os.makedirs(ND)
+	return ND+"/"
 
-# set device address
-fcntl.ioctl(fr, I2C_SLAVE, ADDR)
-fcntl.ioctl(fw, I2C_SLAVE, ADDR)
-time.sleep(1) #StartUp
 
-s = [0x22,0x00,0x08,0x2A]
-s2 = bytearray( s )
+def get_position(vehicle):
+    lat = vehicle.location.global_frame.lat
+    long = vehicle.location.global_frame.lon
+    alt = vehicle.location.global_frame.alt
+    air_spd = vehicle.airspeed
 
-for i in range(30):
-	time.sleep(0.5)
-	
-#REQUEST
+    mode = str(vehicle.mode)
+    mode=mode.split(":")[1]
+
+    gps_stat = str(vehicle.gps_0)
+    fix= gps_stat.split(":")[1].split(",")[0].split('=')[1]
+    count= gps_stat.split(":")[1].split(",")[1].split('=')[1]
+
+
+
+    return [lat,long,alt,air_spd,mode,fix,count]
+
+
+
+def readCO2meter(fw):
+
+	#REQUEST
+	CMD = bytearray([0x22,0x00,0x08,0x2A])
 	try:
-		fw.write( s2 ) #sending config register bytes
-	except IOError,e:
+		fw.write(CMD) #sending config register bytes
+	except IOError as e:
 		e = sys.exc_info()
 
 	time.sleep(0.02)
-	
-#RECEIVE
+
+	#RECEIVE
+	buf=256
 	try:
 		data = fr.read(4) #read 4 bytes
 		buf = array.array('B', data)
-		if buf[1]!=255:
-			print "CO2Vaue: ",(buf[1]*256+buf[2])
-			print buf
-		else:
-			print "bullshit result"
-			print buf
+		#Returns the CO2 value in ppm by joining Byte1 and Byte2
+		val=(buf[1]*256+buf[2])
 
-	except IOError,e:
+	except IOError as e:
 		e = sys.exc_info()
 		print "10Unexpected error2s: ",e
+	return val
+
+#MainLoop
+#Delay for StartUp of CO2Meter
+#TODO
+#time.sleep(60)
+
+#Create Log File
+ND=mkND(dataDir)
+f = open(ND+filename,"w")
+f.write("CO2 (PPM), Latitude, Longitude, Altitude, Air Speed (m/s), Mode, Fixed Sats, Available Sats")
+
+#I2C Setup
+print ("CONFIGUREING I2C")
+I2C_SLAVE=0x0703
+ADDR = 0x68
+bus=1
+fr = io.open("/dev/i2c-"+str(bus), "rb", buffering=0)
+fw = io.open("/dev/i2c-"+str(bus), "wb", buffering=0)
+fcntl.ioctl(fr, I2C_SLAVE, ADDR)
+fcntl.ioctl(fw, I2C_SLAVE, ADDR)
+
+#Run
+#TODO Uncomment
+#while not vehicle.armed:
+#    time.sleep(1) 
+
+for i in range(10):
+#TODO Uncomment
+#while not vehicle.armed:
+	print(i)
+	time.sleep(0.5)
+
+	ppm = readCO2meter(fw)
+	stats = get_position(vehicle)
+
+	f.write("\n%s,%s,%s,%s,%s,%s,%s,%s" % (ppm,stats[0],stats[1],stats[2],stats[3],stats[4],stats[5],stats[6]))
+
+
+
+
+f.close()
+vehicle.close()
+
 
