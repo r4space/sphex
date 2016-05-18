@@ -2,8 +2,17 @@
 #from dronekit import connect, VehicleMode
 import time
 import struct, array, time, io, fcntl, sys
-#CONFIGS
-filename="/home/jwyngaard/Desktop/CO2Readings.csv"
+
+#CONFIGS:
+dataDir="/home/pi/DATA_STORE/"
+filename="CO2Meter_GPS.csv"
+#Make next flight dir
+def mkND(dataDir):
+	a=os.listdir(dataDir)
+	num=len(a)
+	ND=dataDir+"Flight"+str(num+1).zfill(3)
+	os.makedirs(ND)
+	return ND+"/"
 
 #I2C Setup
 def i2c_config():
@@ -53,7 +62,8 @@ def readCO2meter(CMD):
 #Delay for StartUp of CO2Meter
 #TODO
 #time.sleep(60)
-f = open(filename,"w")
+ND=mkND(dataDir)
+f = open(ND+filename,"w")
 CMD = i2c_config()
 
 for i in range(10):
