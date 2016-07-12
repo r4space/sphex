@@ -1,13 +1,14 @@
-#TODO
+#TODO Delete all print statements
 from dronekit import connect, VehicleMode
-#from dronekit import connect, VehicleMode
 import os
 import time
 import struct, array, time, io, fcntl, sys
 
 #CONFIGS:
 dataDir="/home/pi/DATA_STORE/"
-filename="CO2Meter_GPS.csv"
+datafile="CO2Meter_GPS.csv"
+#datafile="CO2Meter_GPS.jsn"
+logfile ="Pi_log.csv"
 vehicle = connect('/dev/ttyAMA0', wait_ready=True, baud=57600)
 pilotV = vehicle.wait_ready('autopilot_version')
 
@@ -39,7 +40,6 @@ def get_position(vehicle):
     return [lat,long,alt,air_spd,mode,fix,count]
 
 
-
 def readCO2meter(fw):
 
 	#REQUEST
@@ -69,10 +69,11 @@ def readCO2meter(fw):
 #TODO
 #time.sleep(60)
 
-#Create Log File
+#Create Data and Log Files
 ND=mkND(dataDir)
-f = open(ND+filename,"w")
-f.write("CO2 (PPM), Latitude, Longitude, Altitude, Air Speed (m/s), Mode, Fixed Sats, Available Sats")
+fd = open(ND+datafile,"w")
+fl = open(ND+logfile,"w")
+fd.write("CO2 (PPM), Latitude, Longitude, Altitude, Air Speed (m/s), Mode, Fixed Sats, Available Sats")
 
 #I2C Setup
 print ("CONFIGUREING I2C")
@@ -84,26 +85,43 @@ fw = io.open("/dev/i2c-"+str(bus), "wb", buffering=0)
 fcntl.ioctl(fr, I2C_SLAVE, ADDR)
 fcntl.ioctl(fw, I2C_SLAVE, ADDR)
 
+
+
+
+
+
+
 #Run
 #TODO Uncomment
-#while not vehicle.armed:
-#    time.sleep(1) 
+while not vehicle.armed:
+	time.sleep(0.5)
+	fl.write( "\rWaiting for arming")
+	sys.stdout.flush()
+	print "\rWaiting for arming"
+
+print "ARMED"
+fl.write("\nSystem armed, starting logs")
 
 for i in range(10):
-#TODO Uncomment
-#while not vehicle.armed:
-	print(i)
-	time.sleep(0.5)
+	try:
+		time.sleep(0.5)
+		ppm = readCO2meter(fw)
+		stats = get_position(vehicle)
 
-	ppm = readCO2meter(fw)
-	stats = get_position(vehicle)
+		fd.write("\n%s,%s,%s,%s,%s,%s,%s,%s" % (ppm,stats[0],stats[1],stats[2],stats[3],stats[4],stats[5],stats[6]))
+		print("\n%s,%s,%s,%s,%s,%s,%s,%s" % (ppm,stats[0],stats[1],stats[2],stats[3],stats[4],stats[5],stats[6]))
 
-	f.write("\n%s,%s,%s,%s,%s,%s,%s,%s" % (ppm,stats[0],stats[1],stats[2],stats[3],stats[4],stats[5],stats[6]))
+		print " Battery: %s" % vehicle.battery
 
+	except KeyboardInterrupt:
 
+		e = sys.exc_info()
+		fl.write("\n"+e)
+		fd.close()
+		fl.close()
+		vehicle.close()
 
-
-f.close()
+fl.write("\nSystem unarmed, closing down and saving data")
+fd.close()
+fl.close()
 vehicle.close()
-
-
