@@ -21,7 +21,7 @@ import time
 
 # Connect to the Vehicle
 # vehicle = connect(connection_string, wait_ready=True, vehicle_class=MyVehicle)
-vehicle = connect('/dev/ttyAMA0', wait_ready=True, baud=57600)
+vehicle = connect('/dev/ttyAMA0', wait_ready=True, baud=57600, vehicle_class=CustomV)
 
 # Add observer for the custom attribute
 
