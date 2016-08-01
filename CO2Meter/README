@@ -1,1 +1,4 @@
 $ ./runFirst.sh
+
+If ./readData.py fails for some reason revert to using Campaign1 script: readData_OLD.py
+
