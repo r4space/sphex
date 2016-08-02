@@ -12,7 +12,7 @@ Custom Vehicle subclass to add IMU data.
 from dronekit import Vehicle
 
 
-class vermont_vehicle(object):
+class special_attribute(object):
     """
     The RAW IMU readings for the usual 9DOF sensor setup. 
     This contains the true raw values without any scaling to allow data capture and system debugging.
@@ -46,12 +46,12 @@ class vermont_vehicle(object):
         return "SCALED_PRESSURE:time_boot_ms={},press_abs={},press_diff={},temperature={}".format(self.time_boot_ms,self.press_abs,self.press_diff,self.temperature)
 
    
-class MyVehicle(Vehicle):
+class vermont_vehicle(Vehicle):
     def __init__(self, *args):
-        super(MyVehicle, self).__init__(*args)
+        super(vermont_vehicle, self).__init__(*args)
 
         # Create an Vehicle.raw_imu object with initial values set to None.
-        self._raw_imu = vermont_vehicle()
+        self._raw_imu = special_attribute()
 
         # Create a message listener using the decorator.   
         @self.on_message('SCALED_PRESSURE')

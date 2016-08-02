@@ -4,9 +4,8 @@
 from dronekit import connect, Vehicle
 import argparse
 
-from VV import vermont_vehicle as vv #Customised vehicle class
-from VV import organise
-
+from VV.vermont_vehicle import vermont_vehicle #Customised vehicle class
+from VV import use_DK as uDk
 #Setup configurations:
 dataDir="/home/jwyngaard/work/DRONES/vermont.git/TESTDATADIR/"
 #dataDir="/home/pi/DATA_STORE/"
@@ -24,36 +23,43 @@ args = parser.parse_args()
 
 
 #Create Data and Log Files
-ND=organise.mk_ND(dataDir)
+ND=uDk.mk_ND(dataDir)
 fd = open(ND+datafile,"w")
 fl = open(ND+logfile,"w")
-fd.write("CO2 (PPM), Latitude, Longitude, Altitude, Air Speed (m/s), Mode, Fixed Satellites, Available Satellites")
+fd.write("CO2 (PPM), Latitude, Longitude, Altitude, Air Speed (m/s), Mode, Fixed Satellites, Available Satellites,voltage,current,level,id")
 
 
-#If simulator specified, start SITL
+#If simulator specified, start SITL and run vermont_vehicle
 if args.sitl:
-    DK.start_sitl(vv)
-    runSITL(vv)
-    sitl.stop()
+    vv,sitl = uDk.start_sitl(vermont_vehicle)
+#############################
+#    import dronekit_sitl
+#    print "HERE1"
+#    sitl = dronekit_sitl.start_default()
+#    print "HERE2"
+#    connection_string = sitl.connection_string()
+#    print('Connecting to vehicle in sitl')
+#    vv = connect(connection_string, wait_ready=True, vehicle_class=vermont_vehicle)
 
-#Connect to a vehicle (sitl or real)
+#############################
+    outcome=uDk.runSITL(vv,fd,fl)
+    if not outcome:
+        sitl.stop()
 #    vehicle.add_attribute_listener('scaled_pressure', raw_imu_callback)
 #     time.sleep(3)
 #     vehicle.remove_message_listener
 
 # Else Connect to the Vehicle
 else:
-    connection_string='/dev/ttyAMA0'
+    fl.write("\nConnecting to pilot in Iris")
     print ('Connecting to pilot in Iris')
-    vehicle = connect(connection_string, wait_ready=True, vehicle_class=MyVehicle,baud=57600)
-    #vehicle = connect('/dev/ttyAMA0', wait_ready=True, baud=57600)
-    pilotV = vehicle.wait_ready('autopilot_version')
-    
-    run(vehicle,sim=False)
+    vv = connect('/dev/ttyAMA0', wait_ready=True, vehicle_class=vermont_vehicle,baud=57600)
+    pilotV = vv.wait_ready('autopilot_version')
+    outcome=uDk.runREAL(vv,fd,fl)
 
-
-fl.write("\nSystem unarmed, closing down and saving data")
-fd.close()
-fl.close()
-vehicle.close()
+if not outcome:
+    fl.write("\nSystem unarmed, closing down and saving data")
+    fd.close()
+    fl.close()
+    vv.close()
 
