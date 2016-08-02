@@ -72,8 +72,8 @@ def runREAL(vehicle,datafile,logfile):
     logfile.write("\nSystem armed, starting logs")
     sys.stdout.flush()
 
-    for i in range(10):
-    # while vehicle.armed:
+    # for i in range(10):
+    while vehicle.armed:
         try:
             time.sleep(0.5)
             stats = get_stats(vehicle)
@@ -106,8 +106,8 @@ def runSITL(vehicle, datafile, logfile):
     logfile.write("\nSystem armed, starting logs")
     sys.stdout.flush()
 
-    for i in range(10):
-    # while vehicle.armed:
+    # for i in range(10):
+    while vehicle.armed:
         try:
             time.sleep(0.5)
             stats = get_stats(vehicle)
