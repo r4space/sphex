@@ -7,8 +7,8 @@ import argparse
 from VV.vermont_vehicle import vermont_vehicle #Customised vehicle class
 from VV import use_DK as uDk
 #Setup configurations:
-dataDir="/home/jwyngaard/work/DRONES/vermont.git/TESTDATADIR/"
-#dataDir="/home/pi/DATA_STORE/"
+#dataDir="/home/jwyngaard/work/DRONES/vermont.git/TESTDATADIR/"
+dataDir="/home/pi/DATA_STORE/"
 
 datafile="CO2Meter_GPS.csv"
 #datafile="CO2Meter_GPS.jsn"
