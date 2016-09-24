@@ -13,7 +13,7 @@ dataDir="/home/pi/DATA_STORE/"
 datafile="CO2Meter_GPS.csv"
 #datafile="CO2Meter_GPS.jsn"
 
-logfile ="Pi_log.csv"
+logfile ="log.log"
 
 
 #Set up option parsing
