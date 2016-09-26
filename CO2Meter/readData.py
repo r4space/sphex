@@ -27,7 +27,7 @@ while (1):
     fd = open(ND+datafile,"w")
     fl = open(ND+logfile,"w")
     fd.write("CO2 (PPM), Latitude, Longitude, Altitude, Air Speed (m/s), Mode, Fixed Satellites, Available Satellites,voltage,current,level,id")
-
+    fl.write("Created files")
 
     #If simulator specified, start SITL and run vermont_vehicle
     if args.sitl:
