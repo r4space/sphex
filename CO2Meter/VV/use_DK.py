@@ -60,7 +60,8 @@ def mk_ND(new_dir):
 def runREAL(vehicle,datafile,logfile):
     # Configure I2C if not a simulation
     fr, fw = CO2.configI2C()
-
+    logfile.write("Entered RunReal, connecting to iris"")
+    sys.stdout.flush()
 
     while not vehicle.armed:
         time.sleep(0.5)
@@ -79,6 +80,7 @@ def runREAL(vehicle,datafile,logfile):
             stats = get_stats(vehicle)
 
             ppm = CO2.readCO2meter(fr, fw)
+            me
             datafile.write("\n%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s" % (
             ppm, stats[0], stats[1], stats[2], stats[3], stats[4], stats[5], stats[6],stats[7],stats[8],stats[9],stats[10]))
             print("\n%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s" % (

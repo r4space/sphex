@@ -27,7 +27,8 @@ while (1):
     fd = open(ND+datafile,"w")
     fl = open(ND+logfile,"w")
     fd.write("CO2 (PPM), Latitude, Longitude, Altitude, Air Speed (m/s), Mode, Fixed Satellites, Available Satellites,voltage,current,level,id")
-
+    fl.write("Created files")
+    sys.stdout.flush()
 
     #If simulator specified, start SITL and run vermont_vehicle
     if args.sitl:
@@ -53,12 +54,14 @@ while (1):
     else:
         fl.write("\nConnecting to pilot in Iris")
         print ('Connecting to pilot in Iris')
+        sys.stdout.flush()
         vv = connect('/dev/ttyAMA0', wait_ready=True, vehicle_class=vermont_vehicle,baud=57600)
         pilotV = vv.wait_ready('autopilot_version')
         outcome=uDk.runREAL(vv,fd,fl)
 
     if not outcome:
         fl.write("\nSystem unarmed, closing down and saving data")
+        sys.stdout.flush()
         fd.close()
         fl.close()
         vv.close()
