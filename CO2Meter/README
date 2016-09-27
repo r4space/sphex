@@ -1,8 +1,0 @@
-Ensure /home/pi/DATA_STORE/ contains no old flights you no longer want or at least note the last flight number so you know what number you are starting on
-
-To capture CO2 data do the following just before flying the drone (on the same power up)
-$ ./runFirst.sh
-$ python readData.py
-
-If readData.py fails for some reason revert to using Campaign1 script: OLD_readData.py
-

@@ -60,7 +60,6 @@ def mk_ND(new_dir):
 def runREAL(vehicle,datafile,logfile):
     # Configure I2C if not a simulation
     fr, fw = CO2.configI2C()
-    logfile.write("Entered RunReal, connecting to iris"")
     sys.stdout.flush()
 
     while not vehicle.armed:
