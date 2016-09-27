@@ -60,7 +60,7 @@ def mk_ND(new_dir):
 def runREAL(vehicle,datafile,logfile):
     # Configure I2C if not a simulation
     fr, fw = CO2.configI2C()
-
+    sys.stdout.flush()
 
     while not vehicle.armed:
         time.sleep(0.5)

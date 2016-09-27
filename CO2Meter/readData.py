@@ -58,9 +58,9 @@ while (1):
 		pilotV = vv.wait_ready('autopilot_version')
 		outcome=uDk.runREAL(vv,fd,fl)
 
-if not outcome:
-	fl.write("\nSystem unarmed, closing down and saving data")
-	fd.close()
-	fl.close()
-	vv.close()
+	if not outcome:
+		fl.write("\nSystem unarmed, closing down and saving data")
+		fd.close()
+		fl.close()
+		vv.close()
 
