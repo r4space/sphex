@@ -79,6 +79,7 @@ def runREAL(vehicle,datafile,logfile):
             stats = get_stats(vehicle)
 
             ppm = CO2.readCO2meter(fr, fw)
+            me
             datafile.write("\n%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s" % (
             ppm, stats[0], stats[1], stats[2], stats[3], stats[4], stats[5], stats[6],stats[7],stats[8],stats[9],stats[10]))
             print("\n%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s" % (
