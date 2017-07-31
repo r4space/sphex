@@ -5,7 +5,7 @@ import time
 import dronekit_sitl
 from dronekit import connect
 
-import co2meter as CO2
+import Serial_CO2meter as CO2
 
 def get_stats(aVehicle):
     """Return vehicle attributes in a list"""
@@ -58,11 +58,9 @@ def mk_ND(new_dir):
     return ND+"/"
 
 def runREAL(vehicle,datafile,logfile):
-    # Configure I2C if not a simulation
-    fr, fw = CO2.configI2C()
-    sys.stdout.flush()
-
-    while not vehicle.armed:
+#SWITCH
+#    while not vehicle.armed:
+    for i in range(5):
         time.sleep(0.5)
         logfile.write("\nWaiting for arming")
         sys.stdout.flush()
@@ -72,8 +70,9 @@ def runREAL(vehicle,datafile,logfile):
     logfile.write("\nSystem armed, starting logs")
     sys.stdout.flush()
 
-    # for i in range(10):
-    while vehicle.armed:
+#SWITCH
+#    while vehicle.armed:
+    for i in range(10):
         try:
             time.sleep(0.5)
             stats = get_stats(vehicle)
