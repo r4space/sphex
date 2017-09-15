@@ -1,0 +1,11 @@
+napame: SSEDD
+version: '0.1' 
+summary: Easy deploy K30 COmeter and Arducopter data logging
+description: Integrates K30CO2meter readings with Arducopter Telemetry.  Future versions will store this data in MongoDB for real time analytics and use ROS as a Pub/Sub system instead of direct connection to the Mavlink stream for scalability purposes.
+grade: devel 
+confinement: devmode # use 'strict' once you have the right plugs and slots
+
+parts:
+  K30:
+    source: https://github.com/ESIPFed/SSEDD.git
+    plugin: nil
