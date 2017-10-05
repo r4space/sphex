@@ -1,0 +1,5 @@
+#To see script options run:
+    $ python CollectData.py -h
+
+#An example of correctly calling the script including all optional parameters:
+    $ python CollectData.py -f FieldASite1_Monday_1_08_17.csv -s 2 -d 1.5 -p 5 -sp -st
